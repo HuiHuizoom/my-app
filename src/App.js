@@ -7,10 +7,10 @@ import { useState } from 'react';
 import { nanoid } from "nanoid";
 
 /*
-1. 为什么addtaks要加在App.js里面，而不是Form.js里面 28-38
+1. 
 2. 勾选框函数参数为什么是id   1：20左右
-3. useEffect是啥，在Todo.js 末尾
-4. filter逻辑 1:39
+3. useEffect是啥，跳过耗时的事情
+4. useRef，拿到组件
 */
 export default function App(props) {
 
@@ -49,7 +49,7 @@ export default function App(props) {
     });
     setTasks(editedTaskList);
   }
-
+  //策略模式，把所以情况抽出map,点击按钮改变filter
   const [filter, setFilter] = useState("All");
   const FILTER_MAP = {
     All: () => true,
