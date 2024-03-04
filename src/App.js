@@ -3,7 +3,7 @@ import './App.css';
 import Todo from './components/Todo';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { nanoid } from "nanoid";
 
 /*
@@ -13,28 +13,42 @@ import { nanoid } from "nanoid";
 4. useRef，拿到组件
 */
 export default function App(props) {
+  let [editCount,setEditCount] = useState(0);
+  useEffect(() => {
+    fetch("http://localhost:8080/todo/all").then(
+      (res) => {return res.json() ;}
+    ).then((value) => {
+      setTasks(value);
+      
+    }
+    )},[editCount])
 
   function addTask(name) {
-    const newTask = { id: "todo-" + nanoid(), name: name, completed: false };
-    setTasks([...tasks, newTask]);
+    fetch("http://localhost:8080/todo/add?name=" + name + "&completed=false" , {method:"post"}).then(
+        (res) => {
+          console.log(res.text());
+          setEditCount(++editCount);
+        }
+    )
   }
 
   function toggleTaskCompleted(id) {
-    const updatedTasks = tasks.map((task) => {
-      // if this task has the same ID as the edited task
-      if (id === task.id) {
-        // use object spread to make a new object
-        // whose `completed` prop has been inverted
-        return { ...task, completed: !task.completed };
+  
+    fetch("http://localhost:8080/todo/update?id=" + id + "&completd=false"  , { method : "post"}).then(
+      (res) => {
+        console.log(res.text());
+        setEditCount(++editCount);
       }
-      return task;
-    });
-    setTasks(updatedTasks);
+    )
   }
 
   function deleteTask(id) {
-    const remainingTasks = tasks.filter((task) => id !== task.id);//满足情况的通过
-    setTasks(remainingTasks);
+    fetch("http://localhost:8080/todo/delete?id=" + id , {method:"post"}).then(
+      (res) => {
+        console.log(res.text());
+        setEditCount(++editCount);
+      }
+  )
   }
 
   function editTask(id, newName) {
